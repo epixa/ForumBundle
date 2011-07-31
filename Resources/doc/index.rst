@@ -1,0 +1,1 @@
+Provides forum functionality for a Symfony2 application.

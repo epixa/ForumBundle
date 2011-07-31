@@ -1,0 +1,13 @@
+forum_home:
+    pattern:  /
+    defaults: { _controller: EpixaForumBundle:Category:index }
+
+forum_category_annotations:
+    resource: "@EpixaForumBundle/Controller/CategoryController.php"
+    type:     annotation
+    prefix:   /category
+
+forum_topic_annotations:
+    resource: "@EpixaForumBundle/Controller/TopicController.php"
+    type:     annotation
+    prefix:   /topic
