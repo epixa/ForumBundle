@@ -1,7 +1,17 @@
 {% extends 'EpixaForumBundle::layout.html.twig' %}
 
 {% block content %}
-<p>Category index</p>
+
+    {% for category in categories %}
+        <section id="category-{{ category.getId() }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
+            <a href="{{ path('view_category', { 'id': category.getId() }) }}">{{ category.getName() }}</a>
+        </section>
+    {% else %}
+        <section id="no-categories">
+            <p>There are no categories to view.</p>
+        </section>
+    {% endfor %}
+        
 {% endblock %}
 
 {% set code = code(_self) %}
