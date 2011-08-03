@@ -45,14 +45,14 @@ class Topic
     protected $dateCreated;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Category")
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="topics")
      * @ORM\JoinColumn(name="category_id", referencedColumnName="id", onDelete="CASCADE")
      * @var Category
      */
     protected $category;
 
     /**
-     * @ORM\OneToMany(targetEntity="Post", mappedBy="topic")
+     * @ORM\OneToMany(targetEntity="Post", mappedBy="topic", fetch="EXTRA_LAZY")
      * @var Post[]
      */
     protected $posts;
@@ -61,7 +61,7 @@ class Topic
     /**
      * Initializes a new Topic
      *
-     * The creation date is set to now.
+     * The creation date is set to now and the posts collection is initialized.
      */
     public function __construct()
     {
@@ -158,14 +158,15 @@ class Topic
     }
 
     /**
-     * Adds a new post to this topic
-     * 
-     * @param Post $post
-     * @return Topic *Fluent interface*
+     * Gets a collection of posts for this topic
+     *
+     * @param integer $page  What page of results to return
+     * @param integer $total The total maximum results to return
+     * @return \Doctrine\Common\Collections\ArrayCollection|Post[]
      */
-    public function addPost(Post $post)
+    public function getPosts($page, $total = 50)
     {
-        $this->posts->add($post);
-        return $this;
+        $offset = ($page - 1) * $total;
+        return $this->posts->slice($offset, $total);
     }
 }

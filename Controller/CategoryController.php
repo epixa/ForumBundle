@@ -28,9 +28,7 @@ class CategoryController extends Controller
      */
     public function indexAction()
     {
-        /* @var $categoryService \Epixa\ForumBundle\Service\Category */
-        $categoryService = $this->get('epixa_forum.service.category');
-        $categories = $categoryService->getAll();
+        $categories = $this->getCategoryService()->getAll();
         
         return array(
             'categories' => $categories
@@ -41,10 +39,29 @@ class CategoryController extends Controller
      * Shows the topics in a specific category
      * 
      * @Route("/{id}", requirements={"id"="\d+"}, name="view_category")
+     * @Route("/{id}/{page}", requirements={"page"="\d+"}, name="view_category_page")
      * @Template()
+     *
+     * @param integer $id   The unique identifier of the requested topic
+     * @param integer $page The page of topics to display for this topic
      */
-    public function viewAction($id)
+    public function viewAction($id, $page = 1)
     {
-        return array('id' => $id);
+        $category = $this->getCategoryService()->get($id);
+        
+        return array(
+            'category' => $category,
+            'page' => $page
+        );
+    }
+
+    /**
+     * Gets the category service
+     * 
+     * @return \Epixa\ForumBundle\Service\Category
+     */
+    public function getCategoryService()
+    {
+        return $this->get('epixa_forum.service.category');
     }
 }

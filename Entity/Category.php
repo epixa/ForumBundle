@@ -6,6 +6,7 @@
 namespace Epixa\ForumBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
+    Doctrine\Common\Collections\ArrayCollection,
     DateTime,
     InvalidArgumentException;
 
@@ -43,15 +44,22 @@ class Category
      */
     protected $dateCreated;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Topic", mappedBy="category", fetch="EXTRA_LAZY")
+     * @var Topic[]
+     */
+    protected $topics;
+
 
     /**
      * Initializes a new Category
      *
-     * The creation date is set to now.
+     * The creation date is set to now and the topics collection is initialized.
      */
     public function __construct()
     {
         $this->dateCreated = new DateTime();
+        $this->topics = new ArrayCollection();
     }
 
     /**
@@ -118,5 +126,18 @@ class Category
 
         $this->dateCreated = $date;
         return $this;
+    }
+
+    /**
+     * Gets a collection of topics in this category
+     *
+     * @param integer $page  What page of results to return
+     * @param integer $total The total maximum results to return
+     * @return \Doctrine\Common\Collections\ArrayCollection|Topic[]
+     */
+    public function getTopics($page, $total = 25)
+    {
+        $offset = ($page - 1) * $total;
+        return $this->topics->slice($offset, $total);
     }
 }

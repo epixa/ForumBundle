@@ -5,6 +5,8 @@
 
 namespace Epixa\ForumBundle\Service;
 
+use Doctrine\ORM\NoResultException;
+
 /**
  * Service for managing forum Categories
  *
@@ -25,5 +27,23 @@ class Category extends AbstractDoctrineService
     {
         $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Category');
         return $repo->findAll();
+    }
+
+    /**
+     * Gets a specific category by its unique identifier
+     * 
+     * @throws \Doctrine\ORM\NoResultException
+     * @param integer $id
+     * @return \Epixa\ForumBundle\Entity\Category
+     */
+    public function get($id)
+    {
+        $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Category');
+        $category = $repo->find($id);
+        if (!$category) {
+            throw new NoResultException('That category canot be found');
+        }
+
+        return $category;
     }
 }

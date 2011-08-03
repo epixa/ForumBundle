@@ -1,7 +1,17 @@
 {% extends 'EpixaForumBundle::layout.html.twig' %}
 
 {% block content %}
-<p>Category view: {{ id }}</p>
+    <p>Category view: {{ category.getName() }}, page {{ page }}</p>
+
+    {% for topic in category.getTopics(page) %}
+        <section id="topic-{{ topic.getId() }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
+            <a href="{{ path('view_topic', { 'id': topic.getId() }) }}">{{ topic.getTitle() }}</a>
+        </section>
+    {% else %}
+        <section id="no-topics">
+            <p>There are no topics that match that criteria.</p>
+        </section>
+    {% endfor %}
 {% endblock %}
 
 {% set code = code(_self) %}

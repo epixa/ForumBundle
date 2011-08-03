@@ -23,7 +23,7 @@ class TopicController extends Controller
     /**
      * Shows a specific topic including all associated posts
      * 
-     * @Route("/{id}", requirements={"id"="\d+"})
+     * @Route("/{id}", requirements={"id"="\d+"}, name="view_topic")
      * @Template()
      */
     public function viewAction($id)
