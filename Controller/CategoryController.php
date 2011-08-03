@@ -42,8 +42,8 @@ class CategoryController extends Controller
      * @Route("/{id}/{page}", requirements={"page"="\d+"}, name="view_category_page")
      * @Template()
      *
-     * @param integer $id   The unique identifier of the requested topic
-     * @param integer $page The page of topics to display for this topic
+     * @param integer $id   The unique identifier of the requested category
+     * @param integer $page The page of topics to display for this category
      */
     public function viewAction($id, $page = 1)
     {

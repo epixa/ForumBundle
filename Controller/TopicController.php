@@ -21,13 +21,32 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller,
 class TopicController extends Controller
 {
     /**
-     * Shows a specific topic including all associated posts
+     * Shows a specific topic including paginated associated posts
      * 
      * @Route("/{id}", requirements={"id"="\d+"}, name="view_topic")
+     * @Route("/{id}/{page}", requirements={"page"="\d+"}, name="view_topic_page")
      * @Template()
+     *
+     * @param integer $id   The unique identifier of the requested topic
+     * @param integer $page The page of posts to display for this topic
      */
-    public function viewAction($id)
+    public function viewAction($id, $page = 1)
     {
-        return array('id' => $id);
+        $topic = $this->getTopicService()->get($id);
+
+        return array(
+            'topic' => $topic,
+            'page' => $page
+        );
+    }
+
+    /**
+     * Gets the topic service
+     *
+     * @return \Epixa\ForumBundle\Service\Topic
+     */
+    public function getTopicService()
+    {
+        return $this->get('epixa_forum.service.topic');
     }
 }

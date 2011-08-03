@@ -1,7 +1,17 @@
 {% extends 'EpixaForumBundle::layout.html.twig' %}
 
 {% block content %}
-<p>Topic view: {{ id }}</p>
+    <p>Topic view: {{ topic.getTitle() }}, page {{ page }}</p>
+
+    {% for post in topic.getPosts(page) %}
+        <section id="post-{{ post.getId() }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
+            {{ post.getContent() | raw }}
+        </section>
+    {% else %}
+        <section id="no-posts">
+            <p>There are no posts that match that criteria.</p>
+        </section>
+    {% endfor %}
 {% endblock %}
 
 {% set code = code(_self) %}

@@ -41,7 +41,7 @@ class Category extends AbstractDoctrineService
         $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Category');
         $category = $repo->find($id);
         if (!$category) {
-            throw new NoResultException('That category canot be found');
+            throw new NoResultException('That category cannot be found');
         }
 
         return $category;

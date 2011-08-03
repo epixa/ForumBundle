@@ -1,8 +1,13 @@
 parameters:
     epixa_forum.service.category.class: Epixa\ForumBundle\Service\Category
+    epixa_forum.service.topic.class: Epixa\ForumBundle\Service\Topic
 
 services:
     epixa_forum.service.category:
         class:  %epixa_forum.service.category.class%
+        calls:
+          - [ setEntityManager, [@doctrine.orm.default_entity_manager] ]
+    epixa_forum.service.topic:
+        class:  %epixa_forum.service.topic.class%
         calls:
           - [ setEntityManager, [@doctrine.orm.default_entity_manager] ]
