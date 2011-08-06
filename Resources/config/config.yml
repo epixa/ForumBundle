@@ -1,13 +1,26 @@
 parameters:
     epixa_forum.service.category.class: Epixa\ForumBundle\Service\Category
     epixa_forum.service.topic.class: Epixa\ForumBundle\Service\Topic
+    epixa_forum.service.post.class: Epixa\ForumBundle\Service\Post
 
 services:
     epixa_forum.service.category:
-        class:  %epixa_forum.service.category.class%
+        class: %epixa_forum.service.category.class%
         calls:
           - [ setEntityManager, [@doctrine.orm.default_entity_manager] ]
     epixa_forum.service.topic:
-        class:  %epixa_forum.service.topic.class%
+        class: %epixa_forum.service.topic.class%
         calls:
           - [ setEntityManager, [@doctrine.orm.default_entity_manager] ]
+    epixa_forum.service.post:
+        class: %epixa_forum.service.post.class%
+        calls:
+          - [ setEntityManager, [@doctrine.orm.default_entity_manager] ]
+    epixa_forum.service.post.base:
+        class: %epixa_forum.service.post.class%
+    epixa_forum.subscriber.post_stats:
+        class: Epixa\ForumBundle\Event\PostStatsSubscriber
+        calls:
+          - [ setPostService, [@epixa_forum.service.post.base] ]
+        tags:
+            - { name: doctrine.event_subscriber }

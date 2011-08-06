@@ -39,6 +39,12 @@ class Topic
     protected $title;
 
     /**
+     * @ORM\Column(name="total_posts", type="integer")
+     * @var int
+     */
+    protected $totalPosts = 0;
+
+    /**
      * @ORM\Column(name="date_created", type="datetime")
      * @var \DateTime
      */
@@ -50,6 +56,13 @@ class Topic
      * @var Category
      */
     protected $category;
+
+    /**
+     * @ORM\OneToOne(targetEntity="Post")
+     * @ORM\JoinColumn(name="latest_post_id", referencedColumnName="id")
+     * @var Post
+     */
+    protected $latestPost;
 
     /**
      * @ORM\OneToMany(targetEntity="Post", mappedBy="topic", fetch="EXTRA_LAZY")
@@ -99,6 +112,16 @@ class Topic
     {
         $this->title = (string)$title;
         return $this;
+    }
+
+    /**
+     * Gets the total posts associated with this topic
+     *
+     * @return integer
+     */
+    public function getTotalPosts()
+    {
+        return $this->totalPosts;
     }
 
     /**

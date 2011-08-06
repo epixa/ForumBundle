@@ -39,6 +39,12 @@ class Category
     protected $name;
 
     /**
+     * @ORM\Column(name="total_topics", type="integer")
+     * @var int
+     */
+    protected $totalTopics = 0;
+
+    /**
      * @ORM\Column(name="date_created", type="datetime")
      * @var \DateTime
      */
@@ -92,6 +98,16 @@ class Category
     {
         $this->name = (string)$name;
         return $this;
+    }
+
+    /**
+     * Gets the total topics associated with this category
+     *
+     * @return integer
+     */
+    public function getTotalTopics()
+    {
+        return $this->totalTopics;
     }
 
     /**

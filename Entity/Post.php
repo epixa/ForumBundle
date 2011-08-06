@@ -31,9 +31,9 @@ class Post
     protected $id;
 
     /**
-     * @ORM\Column(name="content", type="text")
+     * @ORM\Column(name="content", type="text", nullable = "true")
      */
-    protected $content;
+    protected $content = null;
 
     /**
      * @ORM\Column(name="date_created", type="datetime")
@@ -51,11 +51,14 @@ class Post
     /**
      * Initializes a new Post
      *
-     * The creation date is set to now.
+     * The creation date is set to now and the topic is set.
+     *
+     * @param Topic $topic
      */
-    public function __construct()
+    public function __construct(Topic $topic)
     {
-        $this->dateCreated = new DateTime();
+        $this->setDateCreated('now');
+        $this->setTopic($topic);
     }
     
     /**
@@ -140,7 +143,7 @@ class Post
      * @param Topic $topic
      * @return Post *Fluent interface*
      */
-    public function setTopic(Topic $topic)
+    protected function setTopic(Topic $topic)
     {
         $this->topic = $topic;
         return $this;
