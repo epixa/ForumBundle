@@ -5,7 +5,8 @@
 
 namespace Epixa\ForumBundle\Service;
 
-use Epixa\ForumBundle\Entity\Post as PostEntity;
+use Epixa\ForumBundle\Entity\Post as PostEntity,
+    Epixa\ForumBundle\Entity\Topic as TopicEntity;
 
 /**
  * Service for managing forum Posts
@@ -32,5 +33,17 @@ class Post extends AbstractDoctrineService
         );
 
         $db->exec($sql);
+    }
+
+    public function getByTopic(TopicEntity $topic, $page = 1)
+    {
+        /* @var \Epixa\ForumBundle\Repository\Post $repo */
+        $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Post');
+        $qb = $repo->getStandardQueryBuilder();
+
+        $repo->restrictToTopic($qb, $topic);
+        $repo->restrictToPage($qb, $page);
+
+        return $qb->getQuery()->getResult();
     }
 }

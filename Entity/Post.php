@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @license    Simplified BSD
  * @author     Court Ewing (court@epixa.com)
  * 
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Epixa\ForumBundle\Repository\Post")
  * @ORM\Table(name="epixa_forum_post")
  */
 class Post

@@ -50,7 +50,7 @@ class CategoryController extends Controller
 
         return array(
             'category' => $category,
-            'posts' => $this->getTopicService()->getByCategory($category, $page),
+            'topics' => $this->getTopicService()->getByCategory($category, $page),
             'page' => $page
         );
     }

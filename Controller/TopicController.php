@@ -36,6 +36,7 @@ class TopicController extends Controller
 
         return array(
             'topic' => $topic,
+            'posts' => $this->getPostService()->getByTopic($topic, $page),
             'page' => $page
         );
     }
@@ -48,5 +49,15 @@ class TopicController extends Controller
     public function getTopicService()
     {
         return $this->get('epixa_forum.service.topic');
+    }
+
+    /**
+     * Gets the post service
+     *
+     * @return \Epixa\ForumBundle\Service\Post
+     */
+    public function getPostService()
+    {
+        return $this->get('epixa_forum.service.post');
     }
 }

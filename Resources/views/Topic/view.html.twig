@@ -3,7 +3,7 @@
 {% block content %}
     <p>Topic view: {{ topic.getTitle() }}, page {{ page }}</p>
 
-    {% for post in topic.getPosts(page) %}
+    {% for post in posts %}
         <section id="post-{{ post.getId() }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
             {{ post.getContent() | raw }}
         </section>

@@ -3,7 +3,7 @@
 {% block content %}
     <p>Category view: {{ category.getName() }}, page {{ page }}</p>
 
-    {% for topic in posts %}
+    {% for topic in topics %}
         <section id="topic-{{ topic.getId() }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
             <a href="{{ path('view_topic', { 'id': topic.getId() }) }}">{{ topic.getTitle() }}</a>
         </section>
