@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @license    Simplified BSD
  * @author     Court Ewing (court@epixa.com)
  * 
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Epixa\ForumBundle\Repository\Topic")
  * @ORM\Table(name="epixa_forum_topic")
  */
 class Topic

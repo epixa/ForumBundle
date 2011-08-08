@@ -7,8 +7,7 @@ namespace Epixa\ForumBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller,
     Sensio\Bundle\FrameworkExtraBundle\Configuration\Route,
-    Sensio\Bundle\FrameworkExtraBundle\Configuration\Template,
-    Epixa\ForumBundle\Service\Category;
+    Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
 /**
  * Controller managing forum categories
@@ -48,9 +47,10 @@ class CategoryController extends Controller
     public function viewAction($id, $page = 1)
     {
         $category = $this->getCategoryService()->get($id);
-        
+
         return array(
             'category' => $category,
+            'posts' => $this->getTopicService()->getByCategory($category, $page),
             'page' => $page
         );
     }
@@ -63,5 +63,15 @@ class CategoryController extends Controller
     public function getCategoryService()
     {
         return $this->get('epixa_forum.service.category');
+    }
+
+    /**
+     * Gets the topic service
+     *
+     * @return \Epixa\ForumBundle\Service\Topic
+     */
+    public function getTopicService()
+    {
+        return $this->get('epixa_forum.service.topic');
     }
 }

@@ -6,6 +6,7 @@
 namespace Epixa\ForumBundle\Service;
 
 use Doctrine\ORM\NoResultException;
+use Epixa\ForumBundle\Entity\Category as CategoryEntity;
 
 /**
  * Service for managing forum Topics
@@ -34,5 +35,25 @@ class Topic extends AbstractDoctrineService
         }
 
         return $topic;
+    }
+
+    /**
+     * Gets a page of topics associated with the given category
+     * 
+     * @param \Epixa\ForumBundle\Entity\Category $category
+     * @param int $page
+     * @return array
+     */
+    public function getByCategory(CategoryEntity $category, $page = 1)
+    {
+        /* @var \Epixa\ForumBundle\Repository\Topic $repo */
+        $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Topic');
+        $qb = $repo->getStandardQueryBuilder();
+
+        $repo->includeLatestPost($qb);
+        $repo->restrictToCategory($qb, $category);
+        $repo->restrictToPage($qb, $page);
+
+        return $qb->getQuery()->getResult();
     }
 }
