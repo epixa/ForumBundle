@@ -5,7 +5,8 @@
 
 namespace Epixa\ForumBundle\Service;
 
-use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\NoResultException,
+    Epixa\ForumBundle\Entity\Category as CategoryEntity;
 
 /**
  * Service for managing forum Categories
@@ -45,5 +46,19 @@ class Category extends AbstractDoctrineService
         }
 
         return $category;
+    }
+
+    /**
+     * Adds the given category to the database
+     * 
+     * @param \Epixa\ForumBundle\Entity\Category $category
+     * @return void
+     */
+    public function add(CategoryEntity $category)
+    {
+        $em = $this->getEntityManager();
+
+        $em->persist($category);
+        $em->flush();
     }
 }

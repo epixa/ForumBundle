@@ -7,6 +7,7 @@ namespace Epixa\ForumBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
     Doctrine\Common\Collections\ArrayCollection,
+    Symfony\Component\Validator\Constraints as Assert,
     DateTime,
     InvalidArgumentException;
 
@@ -33,7 +34,10 @@ class Category
     protected $id;
 
     /**
-     * @ORM\Column(name="name", type="string")
+     * @ORM\Column(name="name", type="string", length="255")
+     * @Assert\NotBlank()
+     * @Assert\MinLength("4")
+     * @Assert\MaxLength("255")
      * @var string
      */
     protected $name;

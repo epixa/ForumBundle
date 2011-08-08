@@ -7,7 +7,10 @@ namespace Epixa\ForumBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller,
     Sensio\Bundle\FrameworkExtraBundle\Configuration\Route,
-    Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+    Sensio\Bundle\FrameworkExtraBundle\Configuration\Template,
+    Symfony\Component\HttpFoundation\Request,
+    Epixa\ForumBundle\Entity\Category as CategoryEntity,
+    Epixa\ForumBundle\Form\Type\CategoryType;
 
 /**
  * Controller managing forum categories
@@ -24,6 +27,7 @@ class CategoryController extends Controller
      * Shows the index of call categories
      * 
      * @Template()
+     * @return array
      */
     public function indexAction()
     {
@@ -43,6 +47,7 @@ class CategoryController extends Controller
      *
      * @param integer $id   The unique identifier of the requested category
      * @param integer $page The page of topics to display for this category
+     * @return array
      */
     public function viewAction($id, $page = 1)
     {
@@ -52,6 +57,35 @@ class CategoryController extends Controller
             'category' => $category,
             'topics' => $this->getTopicService()->getByCategory($category, $page),
             'page' => $page
+        );
+    }
+
+    /**
+     * @Route("/add", name="add_category")
+     * @Template()
+     * 
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return array
+     */
+    public function addAction(Request $request)
+    {
+        $category = new CategoryEntity();
+
+        $form = $this->createForm(new CategoryType(), $category);
+
+        if ($request->getMethod() == 'POST') {
+            $form->bindRequest($request);
+
+            if ($form->isValid()) {
+                $this->getCategoryService()->add($category);
+
+                $this->get('session')->setFlash('notice', 'Category created');
+                return $this->redirect($this->generateUrl('forum_home'));
+            }
+        }
+        
+        return array(
+            'form' => $form->createView()
         );
     }
 
