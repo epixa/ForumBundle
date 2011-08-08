@@ -19,6 +19,12 @@ use Epixa\ForumBundle\Entity\Post as PostEntity,
  */
 class Post extends AbstractDoctrineService
 {
+    /**
+     * Updates post stats for the given post
+     *
+     * @param \Epixa\ForumBundle\Entity\Post $post
+     * @return void
+     */
     public function updateNewPostStats(PostEntity $post)
     {
         /* @var \Doctrine\DBAL\Connection $db */
@@ -35,6 +41,13 @@ class Post extends AbstractDoctrineService
         $db->exec($sql);
     }
 
+    /**
+     * Gets a page of posts associated with the given topic
+     * 
+     * @param \Epixa\ForumBundle\Entity\Topic $topic
+     * @param int $page
+     * @return array
+     */
     public function getByTopic(TopicEntity $topic, $page = 1)
     {
         /* @var \Epixa\ForumBundle\Repository\Post $repo */
