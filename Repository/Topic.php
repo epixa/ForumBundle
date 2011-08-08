@@ -60,6 +60,7 @@ class Topic extends EntityRepository
      * 
      * @param \Doctrine\ORM\QueryBuilder $qb
      * @param integer $page
+     * @param integer $max
      * @return void
      */
     public function restrictToPage(QueryBuilder $qb, $page, $max = 25)
