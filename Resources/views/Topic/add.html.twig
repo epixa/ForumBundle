@@ -1,0 +1,13 @@
+{% extends 'EpixaForumBundle::layout.html.twig' %}
+
+{% block content %}
+    <p>Add Topic</p>
+
+    <form action="{{ path('add_topic', {'categoryId' : category.getId()}) }}" method="post" {{ form_enctype(form) }}>
+        {{ form_widget(form) }}
+
+        <input type="submit" value="Submit" />
+    </form>
+{% endblock %}
+
+{% set code = code(_self) %}

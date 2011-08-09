@@ -7,6 +7,7 @@ namespace Epixa\ForumBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM,
     Doctrine\Common\Collections\ArrayCollection,
+    Symfony\Component\Validator\Constraints as Assert,
     DateTime,
     InvalidArgumentException;
 
@@ -34,6 +35,8 @@ class Topic
 
     /**
      * @ORM\Column(name="title", type="string")
+     * @Assert\NotBlank()
+     * @Assert\MaxLength("255")
      * @var string
      */
     protected $title;
@@ -74,12 +77,15 @@ class Topic
     /**
      * Initializes a new Topic
      *
-     * The creation date is set to now and the posts collection is initialized.
+     * The creation date is set to now, the posts collection is initialized, and the category is set.
+     * 
+     * @param Category $category
      */
-    public function __construct()
+    public function __construct(Category $category)
     {
         $this->dateCreated = new DateTime();
         $this->posts = new ArrayCollection();
+        $this->setCategory($category);
     }
     
     /**
@@ -177,6 +183,28 @@ class Topic
     public function setCategory(Category $category)
     {
         $this->category = $category;
+        return $this;
+    }
+
+    /**
+     * Gets the latest post from this topic
+     * 
+     * @return Post
+     */
+    public function getLatestPost()
+    {
+        return $this->latestPost;
+    }
+
+    /**
+     * Sets the latest post for this topic
+     * 
+     * @param Post $post
+     * @return Topic *Fluent interface*
+     */
+    public function setLatestPost(Post $post)
+    {
+        $this->latestPost = $post;
         return $this;
     }
 

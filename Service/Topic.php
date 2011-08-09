@@ -5,8 +5,11 @@
 
 namespace Epixa\ForumBundle\Service;
 
-use Doctrine\ORM\NoResultException;
-use Epixa\ForumBundle\Entity\Category as CategoryEntity;
+use Doctrine\ORM\NoResultException,
+    Epixa\ForumBundle\Entity\Category as CategoryEntity,
+    Epixa\ForumBundle\Entity\Topic as TopicEntity,
+    Epixa\ForumBundle\Entity\Post as PostEntity,
+    Epixa\ForumBundle\Model\NewTopic as NewTopicModel;
 
 /**
  * Service for managing forum Topics
@@ -55,5 +58,30 @@ class Topic extends AbstractDoctrineService
         $repo->restrictToPage($qb, $page);
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Adds the given new topic to the database
+     *
+     * New topics also include the content for the first post in the topic.
+     *
+     * @param \Epixa\ForumBundle\Model\NewTopic $newTopic
+     * @return \Epixa\ForumBundle\Entity\Topic
+     */
+    public function add(NewTopicModel $newTopic)
+    {
+        $topic = new TopicEntity($newTopic->getCategory());
+        $topic->setTitle($newTopic->getTitle());
+
+        $post = new PostEntity($topic);
+        $post->setContent($newTopic->getContent());
+
+        $em = $this->getEntityManager();
+
+        $em->persist($topic);
+        $em->persist($post);
+        $em->flush();
+
+        return $topic;
     }
 }

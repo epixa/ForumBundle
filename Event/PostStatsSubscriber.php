@@ -86,7 +86,6 @@ class PostStatsSubscriber implements EventSubscriber
             // If the service container inject the entity manager
             $service->setEntityManager($eventArgs->getEntityManager());
             $service->updateNewPostStats($entity);
-
         }
     }
 }

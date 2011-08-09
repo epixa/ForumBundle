@@ -39,6 +39,7 @@ class Post extends AbstractDoctrineService
         );
 
         $db->exec($sql);
+        $post->getTopic()->setLatestPost($post);
     }
 
     /**
