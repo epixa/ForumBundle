@@ -60,4 +60,18 @@ class Post extends AbstractDoctrineService
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * Adds the given post to the database
+     *
+     * @param \Epixa\ForumBundle\Entity\Post $post
+     * @return void
+     */
+    public function add(PostEntity $post)
+    {
+        $em = $this->getEntityManager();
+
+        $em->persist($post);
+        $em->flush();
+    }
 }

@@ -11,3 +11,8 @@ forum_topic_annotations:
     resource: "@EpixaForumBundle/Controller/TopicController.php"
     type:     annotation
     prefix:   /topic
+
+forum_post_annotations:
+    resource: "@EpixaForumBundle/Controller/PostController.php"
+    type:     annotation
+    prefix:   /post
