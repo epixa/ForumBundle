@@ -9,7 +9,8 @@ use Doctrine\ORM\NoResultException,
     Epixa\ForumBundle\Entity\Category as CategoryEntity,
     Epixa\ForumBundle\Entity\Topic as TopicEntity,
     Epixa\ForumBundle\Entity\Post as PostEntity,
-    Epixa\ForumBundle\Model\NewTopic as NewTopicModel;
+    Epixa\ForumBundle\Model\NewTopic as NewTopicModel,
+    InvalidArgumentException;
 
 /**
  * Service for managing forum Topics
@@ -83,5 +84,22 @@ class Topic extends AbstractDoctrineService
         $em->flush();
 
         return $topic;
+    }
+
+    /**
+     * Updates the given topic in the database
+     * 
+     * @throws \InvalidArgumentException
+     * @param \Epixa\ForumBundle\Entity\Topic $topic
+     * @return void
+     */
+    public function update(TopicEntity $topic)
+    {
+        $em = $this->getEntityManager();
+        if (!$em->contains($topic)) {
+            throw new InvalidArgumentException('Topic is not managed');
+        }
+
+        $em->flush();
     }
 }

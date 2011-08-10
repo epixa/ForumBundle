@@ -10,7 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller,
     Sensio\Bundle\FrameworkExtraBundle\Configuration\Template,
     Symfony\Component\HttpFoundation\Request,
     Epixa\ForumBundle\Model\NewTopic as NewTopicModel,
-    Epixa\ForumBundle\Form\Type\TopicType;
+    Epixa\ForumBundle\Form\Type\TopicType,
+    Epixa\ForumBundle\Form\Type\NewTopicType;
 
 /**
  * Controller managing forum topics
@@ -58,7 +59,7 @@ class TopicController extends Controller
         
         $newTopic = new NewTopicModel($category);
 
-        $form = $this->createForm(new TopicType(), $newTopic);
+        $form = $this->createForm(new NewTopicType(), $newTopic);
 
         if ($request->getMethod() == 'POST') {
             $form->bindRequest($request);
@@ -74,6 +75,38 @@ class TopicController extends Controller
         return array(
             'form' => $form->createView(),
             'category' => $category
+        );
+    }
+
+    /**
+     * @Route("/edit/{id}", requirements={"id"="\d+"}, name="edit_topic")
+     * @Template()
+     *
+     * @param integer $id
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return array
+     */
+    public function editAction($id, Request $request)
+    {
+        $service = $this->getTopicService();
+        $topic = $service->get($id);
+
+        $form = $this->createForm(new TopicType(), $topic);
+
+        if ($request->getMethod() == 'POST') {
+            $form->bindRequest($request);
+
+            if ($form->isValid()) {
+                $service->update($topic);
+
+                $this->get('session')->setFlash('notice', 'Topic updated');
+                return $this->redirect($this->generateUrl('view_topic', array('id' => $topic->getId())));
+            }
+        }
+
+        return array(
+            'form' => $form->createView(),
+            'topic' => $topic
         );
     }
 

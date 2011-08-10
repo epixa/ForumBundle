@@ -9,7 +9,7 @@ use Symfony\Component\Form\AbstractType,
     Symfony\Component\Form\FormBuilder;
 
 /**
- * Form type for topics
+ * Form type for new topics
  *
  * @category   EpixaForumBundle
  * @package    Form
@@ -18,7 +18,7 @@ use Symfony\Component\Form\AbstractType,
  * @license    Simplified BSD
  * @author     Court Ewing (court@epixa.com)
  */
-class TopicType extends AbstractType
+class NewTopicType extends AbstractType
 {
     /**
      * Instructs the construction of forms of this type
@@ -30,6 +30,7 @@ class TopicType extends AbstractType
     public function buildForm(FormBuilder $builder, array $options)
     {
         $builder->add('title');
+        $builder->add('content', 'textarea');
     }
 
     /**
@@ -41,7 +42,7 @@ class TopicType extends AbstractType
     public function getDefaultOptions(array $options)
     {
         return array(
-            'data_class' => 'Epixa\ForumBundle\Entity\Topic'
+            'data_class' => 'Epixa\ForumBundle\Model\NewTopic'
         );
     }
 
@@ -52,6 +53,6 @@ class TopicType extends AbstractType
      */
     public function getName()
     {
-        return 'epxia_forum_topic';
+        return 'epxia_forum_newtopic';
     }
 }

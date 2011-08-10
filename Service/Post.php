@@ -93,4 +93,21 @@ class Post extends AbstractDoctrineService
         $em->persist($post);
         $em->flush();
     }
+
+    /**
+     * Updates the given post in the database
+     *
+     * @throws \InvalidArgumentException
+     * @param \Epixa\ForumBundle\Entity\Post $post
+     * @return void
+     */
+    public function update(PostEntity $post)
+    {
+        $em = $this->getEntityManager();
+        if (!$em->contains($post)) {
+            throw new InvalidArgumentException('Post is not managed');
+        }
+
+        $em->flush();
+    }
 }

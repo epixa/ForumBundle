@@ -67,7 +67,8 @@ class PostController extends Controller
      */
     public function editAction($id, Request $request)
     {
-        $post = $this->getPostService()->get($id);
+        $service = $this->getPostService();
+        $post = $service->get($id);
 
         $form = $this->createForm(new PostType(), $post);
 
@@ -75,7 +76,7 @@ class PostController extends Controller
             $form->bindRequest($request);
 
             if ($form->isValid()) {
-                $this->getPostService()->add($post);
+                $service->update($post);
 
                 $this->get('session')->setFlash('notice', 'Post updated');
                 $baseUrl = $this->generateUrl('view_topic', array('id' => $post->getTopic()->getId()));

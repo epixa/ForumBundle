@@ -42,7 +42,7 @@ class CategoryController extends Controller
      * Shows the topics in a specific category
      * 
      * @Route("/{id}", requirements={"id"="\d+"}, name="view_category")
-     * @Route("/{id}/{page}", requirements={"page"="\d+"}, name="view_category_page")
+     * @Route("/{id}/{page}", requirements={"id"="\d+", "page"="\d+"}, name="view_category_page")
      * @Template()
      *
      * @param integer $id   The unique identifier of the requested category
@@ -86,6 +86,38 @@ class CategoryController extends Controller
         
         return array(
             'form' => $form->createView()
+        );
+    }
+
+    /**
+     * @Route("/edit/{id}", requirements={"id"="\d+"}, name="edit_category")
+     * @Template()
+     *
+     * @param integer $id
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return array
+     */
+    public function editAction($id, Request $request)
+    {
+        $service = $this->getCategoryService();
+        $category = $service->get($id);
+
+        $form = $this->createForm(new CategoryType(), $category);
+
+        if ($request->getMethod() == 'POST') {
+            $form->bindRequest($request);
+
+            if ($form->isValid()) {
+                $service->update($category);
+
+                $this->get('session')->setFlash('notice', 'Category updated');
+                return $this->redirect($this->generateUrl('view_category', array('id' => $category->getId())));
+            }
+        }
+
+        return array(
+            'form' => $form->createView(),
+            'category' => $category
         );
     }
 

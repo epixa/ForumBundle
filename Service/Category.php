@@ -6,7 +6,8 @@
 namespace Epixa\ForumBundle\Service;
 
 use Doctrine\ORM\NoResultException,
-    Epixa\ForumBundle\Entity\Category as CategoryEntity;
+    Epixa\ForumBundle\Entity\Category as CategoryEntity,
+    InvalidArgumentException;
 
 /**
  * Service for managing forum Categories
@@ -59,6 +60,23 @@ class Category extends AbstractDoctrineService
         $em = $this->getEntityManager();
 
         $em->persist($category);
+        $em->flush();
+    }
+
+    /**
+     * Updates the given category in the database
+     *
+     * @throws \InvalidArgumentException
+     * @param \Epixa\ForumBundle\Entity\Category $category
+     * @return void
+     */
+    public function update(CategoryEntity $category)
+    {
+        $em = $this->getEntityManager();
+        if (!$em->contains($category)) {
+            throw new InvalidArgumentException('Category is not managed');
+        }
+
         $em->flush();
     }
 }
