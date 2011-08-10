@@ -5,7 +5,8 @@
 
 namespace Epixa\ForumBundle\Service;
 
-use Epixa\ForumBundle\Entity\Post as PostEntity,
+use Doctrine\ORM\NoResultException,
+    Epixa\ForumBundle\Entity\Post as PostEntity,
     Epixa\ForumBundle\Entity\Topic as TopicEntity;
 
 /**
@@ -19,6 +20,24 @@ use Epixa\ForumBundle\Entity\Post as PostEntity,
  */
 class Post extends AbstractDoctrineService
 {
+    /**
+     * Gets a specific post by its unique identifier
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @param integer $id
+     * @return \Epixa\ForumBundle\Entity\Post
+     */
+    public function get($id)
+    {
+        $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Post');
+        $topic = $repo->find($id);
+        if (!$topic) {
+            throw new NoResultException('That post cannot be found');
+        }
+
+        return $topic;
+    }
+
     /**
      * Updates post stats for the given post
      *

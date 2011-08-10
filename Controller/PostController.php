@@ -58,6 +58,38 @@ class PostController extends Controller
     }
 
     /**
+     * @Route("/edit/{id}", requirements={"id"="\d+"}, name="edit_post")
+     * @Template()
+     *
+     * @param integer $id
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return array
+     */
+    public function editAction($id, Request $request)
+    {
+        $post = $this->getPostService()->get($id);
+
+        $form = $this->createForm(new PostType(), $post);
+
+        if ($request->getMethod() == 'POST') {
+            $form->bindRequest($request);
+
+            if ($form->isValid()) {
+                $this->getPostService()->add($post);
+
+                $this->get('session')->setFlash('notice', 'Post updated');
+                $baseUrl = $this->generateUrl('view_topic', array('id' => $post->getTopic()->getId()));
+                return $this->redirect($baseUrl . '#post-' . $post->getId());
+            }
+        }
+
+        return array(
+            'form' => $form->createView(),
+            'post' => $post
+        );
+    }
+
+    /**
      * Gets the topic service
      *
      * @return \Epixa\ForumBundle\Service\Topic
