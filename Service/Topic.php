@@ -7,7 +7,7 @@ namespace Epixa\ForumBundle\Service;
 
 use Doctrine\ORM\NoResultException,
     Epixa\ForumBundle\Entity\Category as CategoryEntity,
-    Epixa\ForumBundle\Entity\Topic as TopicEntity,
+    Epixa\ForumBundle\Entity\Topic\StandardTopic as TopicEntity,
     Epixa\ForumBundle\Entity\Post as PostEntity,
     Epixa\ForumBundle\Model\NewTopic as NewTopicModel,
     InvalidArgumentException;
@@ -28,11 +28,11 @@ class Topic extends AbstractDoctrineService
      *
      * @throws \Doctrine\ORM\NoResultException
      * @param integer $id
-     * @return \Epixa\ForumBundle\Entity\Topic
+     * @return \Epixa\ForumBundle\Entity\Topic\StandardTopic
      */
     public function get($id)
     {
-        $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Topic');
+        $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Topic\StandardTopic');
         $topic = $repo->find($id);
         if (!$topic) {
             throw new NoResultException('That topic cannot be found');
@@ -51,10 +51,9 @@ class Topic extends AbstractDoctrineService
     public function getByCategory(CategoryEntity $category, $page = 1)
     {
         /* @var \Epixa\ForumBundle\Repository\Topic $repo */
-        $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Topic');
+        $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Topic\StandardTopic');
         $qb = $repo->getStandardQueryBuilder();
 
-        $repo->includeLatestPost($qb);
         $repo->restrictToCategory($qb, $category);
         $repo->restrictToPage($qb, $page);
 
@@ -64,23 +63,13 @@ class Topic extends AbstractDoctrineService
     /**
      * Adds the given new topic to the database
      *
-     * New topics also include the content for the first post in the topic.
-     *
-     * @param \Epixa\ForumBundle\Model\NewTopic $newTopic
-     * @return \Epixa\ForumBundle\Entity\Topic
+     * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
+     * @return \Epixa\ForumBundle\Entity\Topic\StandardTopic
      */
-    public function add(NewTopicModel $newTopic)
+    public function add(TopicEntity $topic)
     {
-        $topic = new TopicEntity($newTopic->getCategory());
-        $topic->setTitle($newTopic->getTitle());
-
-        $post = new PostEntity($topic);
-        $post->setContent($newTopic->getContent());
-
         $em = $this->getEntityManager();
-
         $em->persist($topic);
-        $em->persist($post);
         $em->flush();
 
         return $topic;
@@ -90,7 +79,7 @@ class Topic extends AbstractDoctrineService
      * Updates the given topic in the database
      * 
      * @throws \InvalidArgumentException
-     * @param \Epixa\ForumBundle\Entity\Topic $topic
+     * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
      * @return void
      */
     public function update(TopicEntity $topic)

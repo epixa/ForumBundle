@@ -7,7 +7,8 @@ namespace Epixa\ForumBundle\Service;
 
 use Doctrine\ORM\NoResultException,
     Epixa\ForumBundle\Entity\Post as PostEntity,
-    Epixa\ForumBundle\Entity\Topic as TopicEntity;
+    Epixa\ForumBundle\Entity\Topic\StandardTopic as TopicEntity,
+    InvalidArgumentException;
 
 /**
  * Service for managing forum Posts
@@ -30,12 +31,12 @@ class Post extends AbstractDoctrineService
     public function get($id)
     {
         $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Post');
-        $topic = $repo->find($id);
-        if (!$topic) {
+        $post = $repo->find($id);
+        if (!$post) {
             throw new NoResultException('That post cannot be found');
         }
 
-        return $topic;
+        return $post;
     }
 
     /**
@@ -50,21 +51,18 @@ class Post extends AbstractDoctrineService
         $db = $this->getEntityManager()->getConnection();
         $sql = sprintf(
             'update epixa_forum_topic
-             set total_posts = total_posts + 1,
-                 latest_post_id = %s
+             set total_posts = total_posts + 1
              where id = %s',
-            $db->quote($post->getId()),
-            $db->quote($post->getTopic()->getId())
+            $db->quote($post->getId())
         );
 
         $db->exec($sql);
-        $post->getTopic()->setLatestPost($post);
     }
 
     /**
      * Gets a page of posts associated with the given topic
      * 
-     * @param \Epixa\ForumBundle\Entity\Topic $topic
+     * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
      * @param int $page
      * @return array
      */

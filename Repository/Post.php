@@ -7,7 +7,7 @@ namespace Epixa\ForumBundle\Repository;
 
 use Doctrine\ORM\EntityRepository,
     Doctrine\ORM\QueryBuilder,
-    Epixa\ForumBundle\Entity\Topic as TopicEntity;
+    Epixa\ForumBundle\Entity\Topic\StandardTopic as TopicEntity;
 
 /**
  * Repository for data access logic related to post entities

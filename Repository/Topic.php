@@ -31,18 +31,6 @@ class Topic extends EntityRepository
     }
 
     /**
-     * Includes the latest post in the topic query builder
-     * 
-     * @param \Doctrine\ORM\QueryBuilder $qb
-     * @return void
-     */
-    public function includeLatestPost(QueryBuilder $qb)
-    {
-        $qb->innerJoin('t.latestPost', 'lp');
-        $qb->addSelect('lp');
-    }
-
-    /**
      * Restricts the given query to only posts that are associated with the given category
      * 
      * @param \Doctrine\ORM\QueryBuilder $qb

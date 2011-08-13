@@ -3,27 +3,34 @@
  * Epixa - ForumBundle
  */
 
-namespace Epixa\ForumBundle\Entity;
+namespace Epixa\ForumBundle\Entity\Topic;
 
-use Doctrine\ORM\Mapping as ORM,
+use Epixa\ForumBundle\Entity\Category,
+    Doctrine\ORM\Mapping as ORM,
     Doctrine\Common\Collections\ArrayCollection,
     Symfony\Component\Validator\Constraints as Assert,
     DateTime,
     InvalidArgumentException;
 
 /**
- * A representation of a forum topic
- * 
+ * A representation of a standard forum topic
+ *
  * @category   EpixaForumBundle
  * @package    Entity
+ * @subpackage Topic
  * @copyright  2011 epixa.com - Court Ewing
  * @license    Simplified BSD
  * @author     Court Ewing (court@epixa.com)
- * 
+ *
  * @ORM\Entity(repositoryClass="Epixa\ForumBundle\Repository\Topic")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discriminator", type="string")
+ * @ORM\DiscriminatorMap({
+ *  "standard" = "StandardTopic"
+ * })
  * @ORM\Table(name="epixa_forum_topic")
  */
-class Topic
+class StandardTopic
 {
     /**
      * @ORM\Id
@@ -42,6 +49,13 @@ class Topic
     protected $title;
 
     /**
+     * @ORM\Column(name="comment", type="text")
+     * @Assert\MaxLength("5000")
+     * @var null|string
+     */
+    protected $comment = null;
+
+    /**
      * @ORM\Column(name="total_posts", type="integer")
      * @var int
      */
@@ -54,22 +68,15 @@ class Topic
     protected $dateCreated;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Category", inversedBy="topics")
+     * @ORM\ManyToOne(targetEntity="Epixa\ForumBundle\Entity\Category", inversedBy="topics")
      * @ORM\JoinColumn(name="category_id", referencedColumnName="id", onDelete="CASCADE")
-     * @var Category
+     * @var \Epixa\ForumBundle\Entity\Category
      */
     protected $category;
 
     /**
-     * @ORM\OneToOne(targetEntity="Post")
-     * @ORM\JoinColumn(name="latest_post_id", referencedColumnName="id")
-     * @var Post
-     */
-    protected $latestPost;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Post", mappedBy="topic", fetch="EXTRA_LAZY")
-     * @var Post[]
+     * @ORM\OneToMany(targetEntity="Epixa\ForumBundle\Entity\Post", mappedBy="topic")
+     * @var \Epixa\ForumBundle\Entity\Post[]
      */
     protected $posts;
 
@@ -79,15 +86,15 @@ class Topic
      *
      * The creation date is set to now, the posts collection is initialized, and the category is set.
      * 
-     * @param Category $category
+     * @param \Epixa\ForumBundle\Entity\Category $category
      */
     public function __construct(Category $category)
     {
-        $this->dateCreated = new DateTime();
-        $this->posts = new ArrayCollection();
+        $this->setDateCreated('now');
         $this->setCategory($category);
+        $this->posts = new ArrayCollection();
     }
-    
+
     /**
      * Gets the unique identifier of this entity
      *
@@ -112,11 +119,38 @@ class Topic
      * Sets the topic title
      *
      * @param string $title
-     * @return Topic *Fluent interface*
+     * @return StandardTopic *Fluent interface*
      */
     public function setTitle($title)
     {
         $this->title = (string)$title;
+        return $this;
+    }
+
+    /**
+     * Gets the comment content associated with this topic
+     * 
+     * @return string
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
+
+    /**
+     * Sets the comment content associated with this topic
+     * 
+     * @param string $comment
+     * @return StandardTopic *Fluent interface*
+     */
+    public function setComment($comment)
+    {
+        $comment = trim((string)$comment);
+        if ($comment == '') {
+            $comment = null;
+        }
+
+        $this->comment = $comment;
         return $this;
     }
 
@@ -145,7 +179,7 @@ class Topic
      *
      * @throws \InvalidArgumentException
      * @param \DateTime|string|integer $date
-     * @return Topic *Fluent interface*
+     * @return StandardTopic *Fluent interface*
      */
     public function setDateCreated($date)
     {
@@ -167,7 +201,7 @@ class Topic
     /**
      * Gets the category of this topic
      *
-     * @return Category
+     * @return \Epixa\ForumBundle\Entity\Category
      */
     public function getCategory()
     {
@@ -176,48 +210,13 @@ class Topic
 
     /**
      * Sets the category of this topic
-     *
-     * @param Category $category
-     * @return Topic *Fluent interface*
+     * 
+     * @param \Epixa\ForumBundle\Entity\Category $category
+     * @return StandardTopic *Fluent interface*
      */
     public function setCategory(Category $category)
     {
         $this->category = $category;
         return $this;
-    }
-
-    /**
-     * Gets the latest post from this topic
-     * 
-     * @return Post
-     */
-    public function getLatestPost()
-    {
-        return $this->latestPost;
-    }
-
-    /**
-     * Sets the latest post for this topic
-     * 
-     * @param Post $post
-     * @return Topic *Fluent interface*
-     */
-    public function setLatestPost(Post $post)
-    {
-        $this->latestPost = $post;
-        return $this;
-    }
-
-    /**
-     * Gets a collection of posts for this topic
-     *
-     * @param integer $page  What page of results to return
-     * @param integer $total The total maximum results to return
-     * @return \Doctrine\Common\Collections\ArrayCollection|Post[]
-     */
-    public function getPosts($page, $total = 50)
-    {
-        $offset = ($page - 1) * $total;
-        return $this->posts->slice($offset, $total);
     }
 }

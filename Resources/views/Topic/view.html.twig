@@ -3,9 +3,11 @@
 {% block content %}
     <p>Topic view: {{ topic.getTitle() }}, page {{ page }}</p>
 
+    <section class="topic_comment">{{ topic.getComment() }}</section>
+
     {% for post in posts %}
         <section id="post-{{ post.getId() }}" class="{{ cycle(['odd', 'even'], loop.index) }}">
-            {{ post.getContent() | raw }}
+            {{ post.getComment() }}
         </section>
     {% else %}
         <section id="no-posts">

@@ -30,6 +30,7 @@ class TopicType extends AbstractType
     public function buildForm(FormBuilder $builder, array $options)
     {
         $builder->add('title');
+        $builder->add('comment');
     }
 
     /**
@@ -41,7 +42,7 @@ class TopicType extends AbstractType
     public function getDefaultOptions(array $options)
     {
         return array(
-            'data_class' => 'Epixa\ForumBundle\Entity\Topic'
+            'data_class' => 'Epixa\ForumBundle\Entity\Topic\StandardTopic'
         );
     }
 

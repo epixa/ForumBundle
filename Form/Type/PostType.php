@@ -29,7 +29,7 @@ class PostType extends AbstractType
      */
     public function buildForm(FormBuilder $builder, array $options)
     {
-        $builder->add('content');
+        $builder->add('comment');
     }
 
 

@@ -5,7 +5,9 @@
 
 namespace Epixa\ForumBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM,
+use Epixa\ForumBundle\Entity\Topic\StandardTopic,
+    Doctrine\ORM\Mapping as ORM,
+    Symfony\Component\Validator\Constraints as Assert,
     DateTime,
     InvalidArgumentException;
 
@@ -27,23 +29,28 @@ class Post
      * @ORM\Id
      * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @var int
      */
     protected $id;
 
     /**
-     * @ORM\Column(name="content", type="text", nullable = "true")
+     * @ORM\Column(name="comment", type="text")
+     * @Assert\NotBlank
+     * @Assert\MaxLength("5000")
+     * @var string
      */
-    protected $content = null;
+    protected $comment;
 
     /**
      * @ORM\Column(name="date_created", type="datetime")
+     * @var \DateTime
      */
     protected $dateCreated;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Topic", inversedBy="posts")
+     * @ORM\ManyToOne(targetEntity="Epixa\ForumBundle\Entity\Topic\StandardTopic", inversedBy="posts")
      * @ORM\JoinColumn(name="topic_id", referencedColumnName="id", onDelete="CASCADE")
-     * @var Topic
+     * @var Topic\StandardTopic
      */
     protected $topic;
 
@@ -53,9 +60,9 @@ class Post
      *
      * The creation date is set to now and the topic is set.
      *
-     * @param Topic $topic
+     * @param Topic\StandardTopic $topic
      */
-    public function __construct(Topic $topic)
+    public function __construct(StandardTopic $topic)
     {
         $this->setDateCreated('now');
         $this->setTopic($topic);
@@ -72,24 +79,24 @@ class Post
     }
 
     /**
-     * Gets the content of this post
-     * 
+     * Gets the comment content of this post
+     *
      * @return string
      */
-    public function getContent()
+    public function getComment()
     {
-        return $this->content;
+        return $this->comment;
     }
 
     /**
-     * Sets the content of this post
+     * Sets the comment content of this post
      * 
-     * @param string $content
+     * @param string $comment
      * @return Post *Fluent interface*
      */
-    public function setContent($content)
+    public function setComment($comment)
     {
-        $this->content = (string)$content;
+        $this->comment = (string)$comment;
         return $this;
     }
 
@@ -130,7 +137,7 @@ class Post
     /**
      * Gets the topic of this post
      * 
-     * @return Topic
+     * @return \Epixa\ForumBundle\Entity\Topic\StandardTopic
      */
     public function getTopic()
     {
@@ -140,10 +147,10 @@ class Post
     /**
      * Sets the topic of this post
      * 
-     * @param Topic $topic
+     * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
      * @return Post *Fluent interface*
      */
-    protected function setTopic(Topic $topic)
+    protected function setTopic(StandardTopic $topic)
     {
         $this->topic = $topic;
         return $this;
