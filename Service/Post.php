@@ -110,4 +110,17 @@ class Post extends AbstractDoctrineService
 
         $em->flush();
     }
+
+    /**
+     * Deletes the given post from the database
+     * 
+     * @param \Epixa\ForumBundle\Entity\Post $post
+     * @return void
+     */
+    public function delete(PostEntity $post)
+    {
+        $em = $this->getEntityManager();
+        $em->remove($post);
+        $em->flush();
+    }
 }

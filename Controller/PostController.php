@@ -10,7 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller,
     Sensio\Bundle\FrameworkExtraBundle\Configuration\Template,
     Symfony\Component\HttpFoundation\Request,
     Epixa\ForumBundle\Entity\Post as PostEntity,
-    Epixa\ForumBundle\Form\Type\PostType;
+    Epixa\ForumBundle\Form\Type\PostType,
+    RuntimeException;
 
 /**
  * Controller managing forum posts
@@ -86,6 +87,32 @@ class PostController extends Controller
 
         return array(
             'form' => $form->createView(),
+            'post' => $post
+        );
+    }
+
+    /**
+     * @Route("/delete/{id}", requirements={"id"="\d+"}, name="delete_post")
+     * @Template()
+     *
+     * @param integer $id
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return array
+     */
+    public function deleteAction($id, Request $request)
+    {
+        $service = $this->getPostService();
+        $post = $service->get($id);
+
+        if ($request->getMethod() == 'POST') {
+            $topic = $post->getTopic();
+            $service->delete($post);
+
+            $this->get('session')->setFlash('notice', 'Post deleted');
+            return $this->redirect($this->generateUrl('view_topic', array('id' => $topic->getId())));
+        }
+
+        return array(
             'post' => $post
         );
     }
