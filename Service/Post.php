@@ -66,14 +66,17 @@ class Post extends AbstractDoctrineService
      * @param int $page
      * @return array
      */
-    public function getByTopic(TopicEntity $topic, $page = 1)
+    public function getByTopic(TopicEntity $topic, $page = null)
     {
         /* @var \Epixa\ForumBundle\Repository\Post $repo */
         $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Post');
         $qb = $repo->getStandardQueryBuilder();
 
         $repo->restrictToTopic($qb, $topic);
-        $repo->restrictToPage($qb, $page);
+
+        if ($page !== null) {
+            $repo->restrictToPage($qb, $page);
+        }
 
         return $qb->getQuery()->getResult();
     }

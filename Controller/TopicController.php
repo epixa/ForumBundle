@@ -27,21 +27,18 @@ class TopicController extends Controller
      * Shows a specific topic including paginated associated posts
      *
      * @Route("/{id}", requirements={"id"="\d+"}, name="view_topic")
-     * @Route("/{id}/{page}", requirements={"id"="\d+", "page"="\d+"}, name="view_topic_page")
      * @Template()
      *
      * @param integer $id   The unique identifier of the requested topic
-     * @param integer $page The page of posts to display for this topic
      * @return array
      */
-    public function viewAction($id, $page = 1)
+    public function viewAction($id)
     {
         $topic = $this->getTopicService()->get($id);
 
         return array(
             'topic' => $topic,
-            'posts' => $this->getPostService()->getByTopic($topic, $page),
-            'page' => $page
+            'posts' => $this->getPostService()->getByTopic($topic)
         );
     }
 
