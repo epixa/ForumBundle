@@ -12,6 +12,8 @@ services:
         class: %epixa_forum.service.topic.class%
         calls:
           - [ setEntityManager, [@doctrine.orm.default_entity_manager] ]
+    epixa_forum.service.topic.base:
+        class: %epixa_forum.service.topic.class%
     epixa_forum.service.post:
         class: %epixa_forum.service.post.class%
         calls:
@@ -22,5 +24,11 @@ services:
         class: Epixa\ForumBundle\Event\PostStatsSubscriber
         calls:
           - [ setPostService, [@epixa_forum.service.post.base] ]
+        tags:
+            - { name: doctrine.event_subscriber }
+    epixa_forum.subscriber.topic_stats:
+        class: Epixa\ForumBundle\Event\TopicStatsSubscriber
+        calls:
+          - [ setTopicService, [@epixa_forum.service.topic.base] ]
         tags:
             - { name: doctrine.event_subscriber }

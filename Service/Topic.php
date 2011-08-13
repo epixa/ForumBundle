@@ -9,7 +9,6 @@ use Doctrine\ORM\NoResultException,
     Epixa\ForumBundle\Entity\Category as CategoryEntity,
     Epixa\ForumBundle\Entity\Topic\StandardTopic as TopicEntity,
     Epixa\ForumBundle\Entity\Post as PostEntity,
-    Epixa\ForumBundle\Model\NewTopic as NewTopicModel,
     InvalidArgumentException;
 
 /**
@@ -58,6 +57,26 @@ class Topic extends AbstractDoctrineService
         $repo->restrictToPage($qb, $page);
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Updates topic stats for the given topic
+     *
+     * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
+     * @return void
+     */
+    public function updateNewTopicStats(TopicEntity $topic)
+    {
+        /* @var \Doctrine\DBAL\Connection $db */
+        $db = $this->getEntityManager()->getConnection();
+        $sql = sprintf(
+            'update epixa_forum_category
+             set total_topics = total_topics + 1
+             where id = %s',
+            $db->quote($topic->getCategory()->getId())
+        );
+
+        $db->exec($sql);
     }
 
     /**

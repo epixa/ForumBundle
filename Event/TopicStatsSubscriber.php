@@ -7,10 +7,10 @@ namespace Epixa\ForumBundle\Event;
 
 use Doctrine\Common\EventSubscriber,
     Doctrine\ORM\Event\LifecycleEventArgs,
-    Epixa\ForumBundle\Service\Post as PostService;
+    Epixa\ForumBundle\Service\Topic as TopicService;
 
 /**
- * Manages the post statistics whenever a post is added, updated, or deleted.
+ * Manages the topics statistics whenever a topic is added, updated, or deleted.
  *
  * This does have a negative impact on performance as it requires additional
  * queries to be executed during a database transaction.
@@ -21,41 +21,41 @@ use Doctrine\Common\EventSubscriber,
  * @license    Simplified BSD
  * @author     Court Ewing (court@epixa.com)
  */
-class PostStatsSubscriber implements EventSubscriber
+class TopicStatsSubscriber implements EventSubscriber
 {
     /**
-     * @var \Epixa\ForumBundle\Service\Post|null
+     * @var \Epixa\ForumBundle\Service\Topic|null
      */
-    protected $postService = null;
+    protected $topicService = null;
 
 
     /**
-     * Sets the post service
-     * 
-     * @param \Epixa\ForumBundle\Service\Post $service
-     * @return PostStatsSubscriber *Fluent interface*
+     * Sets the topic service
+     *
+     * @param \Epixa\ForumBundle\Service\Topic $service
+     * @return TopicStatsSubscriber *Fluent interface*
      */
-    public function setPostService(PostService $service)
+    public function setTopicService(TopicService $service)
     {
-        $this->postService = $service;
+        $this->topicService = $service;
         return $this;
     }
 
     /**
-     * Gets the post service
+     * Gets the topic service
      *
      * @throws \RuntimeException
-     * @return \Epixa\ForumBundle\Service\Post
+     * @return \Epixa\ForumBundle\Service\Topic
      */
-    public function getPostService()
+    public function getTopicService()
     {
-        if ($this->postService === null) {
-            throw new \RuntimeException('No post service set');
+        if ($this->topicService === null) {
+            throw new \RuntimeException('No topic service set');
         }
-        
-        return $this->postService;
+
+        return $this->topicService;
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -69,9 +69,9 @@ class PostStatsSubscriber implements EventSubscriber
     }
 
     /**
-     * Updates the post stats on forum topics whenever a new post is created
+     * Updates the topic stats whenever a new topic is created
      *
-     * Executes following the insert of a new post in a unit of work
+     * Executes following the insert of a new topic in a unit of work
      *
      * @param \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs
      * @return void
@@ -80,12 +80,12 @@ class PostStatsSubscriber implements EventSubscriber
     {
         $entity = $eventArgs->getEntity();
 
-        if ($entity instanceof \Epixa\ForumBundle\Entity\Post) {
-            $service = $this->getPostService();
+        if ($entity instanceof \Epixa\ForumBundle\Entity\Topic\StandardTopic) {
+            $service = $this->getTopicService();
 
             // If the service container inject the entity manager
             $service->setEntityManager($eventArgs->getEntityManager());
-            $service->updateNewPostStats($entity);
+            $service->updateNewTopicStats($entity);
         }
     }
 }

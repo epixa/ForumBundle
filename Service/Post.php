@@ -53,7 +53,7 @@ class Post extends AbstractDoctrineService
             'update epixa_forum_topic
              set total_posts = total_posts + 1
              where id = %s',
-            $db->quote($post->getId())
+            $db->quote($post->getTopic()->getId())
         );
 
         $db->exec($sql);
