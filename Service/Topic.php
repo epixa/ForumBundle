@@ -60,7 +60,7 @@ class Topic extends AbstractDoctrineService
     }
 
     /**
-     * Updates topic stats for the given topic
+     * Updates topic stats for the given new topic
      *
      * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
      * @return void
@@ -77,6 +77,31 @@ class Topic extends AbstractDoctrineService
         );
 
         $db->exec($sql);
+    }
+
+    /**
+     * Updates topic stats for the given modified topic
+     * 
+     * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
+     * @param null|\Epixa\ForumBundle\Entity\Category $oldCategory
+     * @return void
+     */
+    public function updateModifiedTopicStats(TopicEntity $topic, $oldCategory = null)
+    {
+        if ($oldCategory instanceof CategoryEntity && $topic->getCategory()->getId() != $oldCategory->getId()) {
+            /* @var \Doctrine\DBAL\Connection $db */
+            $db = $this->getEntityManager()->getConnection();
+
+            $sql = sprintf(
+                'update epixa_forum_category nc, epixa_forum_category oc
+                 set nc.total_topics = nc.total_topics + 1,
+                     oc.total_topics = oc.total_topics - 1
+                 where nc.id = %s and oc.id = %s',
+                $db->quote($topic->getCategory()->getId()),
+                $db->quote($oldCategory->getId())
+            );
+            $db->exec($sql);
+        }
     }
 
     /**

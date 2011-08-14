@@ -146,6 +146,8 @@ class Post
 
     /**
      * Sets the topic of this post
+     *
+     * This is protected because posts shouldn't be switching between topics.
      * 
      * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
      * @return Post *Fluent interface*

@@ -7,6 +7,7 @@ namespace Epixa\ForumBundle\Event;
 
 use Doctrine\Common\EventSubscriber,
     Doctrine\ORM\Event\LifecycleEventArgs,
+    Doctrine\ORM\Event\PreUpdateEventArgs,
     Epixa\ForumBundle\Service\Topic as TopicService;
 
 /**
@@ -65,7 +66,8 @@ class TopicStatsSubscriber implements EventSubscriber
     {
         return array(
             'postPersist',
-            'postRemove'
+            'postRemove',
+            'preUpdate'
         );
     }
 
@@ -87,6 +89,29 @@ class TopicStatsSubscriber implements EventSubscriber
             // If the service container inject the entity manager
             $service->setEntityManager($eventArgs->getEntityManager());
             $service->updateNewTopicStats($entity);
+        }
+    }
+
+    /**
+     * Updates the topic stats whenever an existing topic is modified
+     *
+     * Executes before the update of an existing topic in a unit of work
+     *
+     * @param \Doctrine\ORM\Event\PreUpdateEventArgs $eventArgs
+     * @return void
+     */
+    public function preUpdate(PreUpdateEventArgs $eventArgs)
+    {
+        $entity = $eventArgs->getEntity();
+
+        if ($entity instanceof \Epixa\ForumBundle\Entity\Topic\StandardTopic) {
+            if ($eventArgs->hasChangedField('category')) {
+                $service = $this->getTopicService();
+
+                // If the service container inject the entity manager
+                $service->setEntityManager($eventArgs->getEntityManager());
+                $service->updateModifiedTopicStats($entity, $eventArgs->getOldValue('category'));
+            }
         }
     }
 
