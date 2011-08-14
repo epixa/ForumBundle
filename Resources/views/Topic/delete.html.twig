@@ -1,0 +1,12 @@
+{% extends 'EpixaForumBundle::layout.html.twig' %}
+
+{% block content %}
+    <p>Delete Topic: {{ topic.getId() }}</p>
+
+    <form action="{{ path('delete_topic', {'id' : topic.getId()}) }}" method="post">
+        <input type="submit" value="Delete" />
+        <a href="{{ path('view_topic', {'id' : topic.getId()}) }}">Cancel</a>
+    </form>
+{% endblock %}
+
+{% set code = code(_self) %}

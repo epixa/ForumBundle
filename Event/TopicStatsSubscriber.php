@@ -64,7 +64,8 @@ class TopicStatsSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return array(
-            'postPersist'
+            'postPersist',
+            'postRemove'
         );
     }
 
@@ -86,6 +87,27 @@ class TopicStatsSubscriber implements EventSubscriber
             // If the service container inject the entity manager
             $service->setEntityManager($eventArgs->getEntityManager());
             $service->updateNewTopicStats($entity);
+        }
+    }
+
+    /**
+     * Updates the topic stats whenever an existing topic is deleted
+     *
+     * Executes following the deletion of an existing topic in a unit of work
+     *
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs
+     * @return void
+     */
+    public function postRemove(LifecycleEventArgs $eventArgs)
+    {
+        $entity = $eventArgs->getEntity();
+
+        if ($entity instanceof \Epixa\ForumBundle\Entity\Topic\StandardTopic) {
+            $service = $this->getTopicService();
+
+            // If the service container inject the entity manager
+            $service->setEntityManager($eventArgs->getEntityManager());
+            $service->updateRemovedTopicStats($entity);
         }
     }
 }

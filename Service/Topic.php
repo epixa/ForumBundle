@@ -80,6 +80,26 @@ class Topic extends AbstractDoctrineService
     }
 
     /**
+     * Updates topic stats for the given deleted topic
+     *
+     * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
+     * @return void
+     */
+    public function updateRemovedTopicStats(TopicEntity $topic)
+    {
+        /* @var \Doctrine\DBAL\Connection $db */
+        $db = $this->getEntityManager()->getConnection();
+        $sql = sprintf(
+            'update epixa_forum_category
+             set total_topics = total_topics - 1
+             where id = %s',
+            $db->quote($topic->getCategory()->getId())
+        );
+
+        $db->exec($sql);
+    }
+
+    /**
      * Adds the given new topic to the database
      *
      * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
@@ -108,6 +128,21 @@ class Topic extends AbstractDoctrineService
             throw new InvalidArgumentException('Topic is not managed');
         }
 
+        $em->flush();
+    }
+
+    /**
+     * Deletes the given topic from the database
+     *
+     * All posts associated with the topic are also deleted.
+     *
+     * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
+     * @return void
+     */
+    public function delete(TopicEntity $topic)
+    {
+        $em = $this->getEntityManager();
+        $em->remove($topic);
         $em->flush();
     }
 }

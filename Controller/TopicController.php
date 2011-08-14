@@ -108,6 +108,32 @@ class TopicController extends Controller
     }
 
     /**
+     * @Route("/delete/{id}", requirements={"id"="\d+"}, name="delete_topic")
+     * @Template()
+     *
+     * @param integer $id
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return array
+     */
+    public function deleteAction($id, Request $request)
+    {
+        $service = $this->getTopicService();
+        $topic = $service->get($id);
+
+        if ($request->getMethod() == 'POST') {
+            $category = $topic->getCategory();
+            $service->delete($topic);
+
+            $this->get('session')->setFlash('notice', 'Topic deleted');
+            return $this->redirect($this->generateUrl('view_category', array('id' => $category->getId())));
+        }
+
+        return array(
+            'topic' => $topic
+        );
+    }
+
+    /**
      * Gets the category service
      *
      * @return \Epixa\ForumBundle\Service\Category
