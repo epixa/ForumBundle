@@ -40,7 +40,7 @@ class Post extends AbstractDoctrineService
     }
 
     /**
-     * Updates post stats for the given post
+     * Updates post stats for the given new post
      *
      * @param \Epixa\ForumBundle\Entity\Post $post
      * @return void
@@ -52,6 +52,26 @@ class Post extends AbstractDoctrineService
         $sql = sprintf(
             'update epixa_forum_topic
              set total_posts = total_posts + 1
+             where id = %s',
+            $db->quote($post->getTopic()->getId())
+        );
+
+        $db->exec($sql);
+    }
+
+    /**
+     * Updates post stats for the given deleted post
+     * 
+     * @param \Epixa\ForumBundle\Entity\Post $post
+     * @return void
+     */
+    public function updateRemovedPostStats(PostEntity $post)
+    {
+        /* @var \Doctrine\DBAL\Connection $db */
+        $db = $this->getEntityManager()->getConnection();
+        $sql = sprintf(
+            'update epixa_forum_topic
+             set total_posts = total_posts - 1
              where id = %s',
             $db->quote($post->getTopic()->getId())
         );

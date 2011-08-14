@@ -64,7 +64,8 @@ class PostStatsSubscriber implements EventSubscriber
     public function getSubscribedEvents()
     {
         return array(
-            'postPersist'
+            'postPersist',
+            'postRemove'
         );
     }
 
@@ -86,6 +87,27 @@ class PostStatsSubscriber implements EventSubscriber
             // If the service container inject the entity manager
             $service->setEntityManager($eventArgs->getEntityManager());
             $service->updateNewPostStats($entity);
+        }
+    }
+
+    /**
+     * Updates the post stats on forum topics whenever a new post is deleted
+     *
+     * Executes following the deletion of an existing post in a unit of work
+     *
+     * @param \Doctrine\ORM\Event\LifecycleEventArgs $eventArgs
+     * @return void
+     */
+    public function postRemove(LifecycleEventArgs $eventArgs)
+    {
+        $entity = $eventArgs->getEntity();
+
+        if ($entity instanceof \Epixa\ForumBundle\Entity\Post) {
+            $service = $this->getPostService();
+
+            // If the service container inject the entity manager
+            $service->setEntityManager($eventArgs->getEntityManager());
+            $service->updateRemovedPostStats($entity);
         }
     }
 }
