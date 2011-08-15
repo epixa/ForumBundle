@@ -10,7 +10,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller,
     Sensio\Bundle\FrameworkExtraBundle\Configuration\Template,
     Symfony\Component\HttpFoundation\Request,
     Epixa\ForumBundle\Entity\Category as CategoryEntity,
-    Epixa\ForumBundle\Form\Type\CategoryType;
+    Epixa\ForumBundle\Form\Type\CategoryType,
+    Epixa\ForumBundle\Form\Type\DeleteCategoryType,
+    Epixa\ForumBundle\Model\CategoryDeletionOptions;
 
 /**
  * Controller managing forum categories
@@ -65,7 +67,7 @@ class CategoryController extends Controller
      * @Template()
      * 
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return array
+     * @return array|\Symfony\Bundle\FrameworkBundle\Controller\RedirectResponse
      */
     public function addAction(Request $request)
     {
@@ -95,7 +97,7 @@ class CategoryController extends Controller
      *
      * @param integer $id
      * @param \Symfony\Component\HttpFoundation\Request $request
-     * @return array
+     * @return array|\Symfony\Bundle\FrameworkBundle\Controller\RedirectResponse
      */
     public function editAction($id, Request $request)
     {
@@ -112,6 +114,41 @@ class CategoryController extends Controller
 
                 $this->get('session')->setFlash('notice', 'Category updated');
                 return $this->redirect($this->generateUrl('view_category', array('id' => $category->getId())));
+            }
+        }
+
+        return array(
+            'form' => $form->createView(),
+            'category' => $category
+        );
+    }
+
+    /**
+     * @Route("/delete/{id}", requirements={"id"="\d+"}, name="delete_category")
+     * @Template()
+     *
+     * @param $id
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @return array|\Symfony\Bundle\FrameworkBundle\Controller\RedirectResponse
+     */
+    public function deleteAction($id, Request $request)
+    {
+        $service = $this->getCategoryService();
+        $category = $service->get($id);
+
+        $deletionOptions = new CategoryDeletionOptions();
+        $deletionOptions->setInheritingCategoryChoices($service->getCategoryChoiceList($category));
+
+        $form = $this->createForm(new DeleteCategoryType(), $deletionOptions);
+
+        if ($request->getMethod() == 'POST') {
+            $form->bindRequest($request);
+
+            if ($form->isValid()) {
+                $service->delete($category, $deletionOptions);
+
+                $this->get('session')->setFlash('notice', 'Category deleted');
+                return $this->redirect($this->generateUrl('forum_home'));
             }
         }
 

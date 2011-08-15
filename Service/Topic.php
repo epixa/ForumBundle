@@ -51,7 +51,7 @@ class Topic extends AbstractDoctrineService
     {
         /* @var \Epixa\ForumBundle\Repository\Topic $repo */
         $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Topic\StandardTopic');
-        $qb = $repo->getStandardQueryBuilder();
+        $qb = $repo->getSelectQueryBuilder();
 
         $repo->restrictToCategory($qb, $category);
         $repo->restrictToPage($qb, $page);

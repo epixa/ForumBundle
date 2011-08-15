@@ -90,7 +90,7 @@ class Post extends AbstractDoctrineService
     {
         /* @var \Epixa\ForumBundle\Repository\Post $repo */
         $repo = $this->getEntityManager()->getRepository('Epixa\ForumBundle\Entity\Post');
-        $qb = $repo->getStandardQueryBuilder();
+        $qb = $repo->getSelectQueryBuilder();
 
         $repo->restrictToTopic($qb, $topic);
 

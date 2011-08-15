@@ -25,7 +25,7 @@ class Topic extends EntityRepository
      *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getStandardQueryBuilder()
+    public function getSelectQueryBuilder()
     {
         return $this->createQueryBuilder('t');
     }

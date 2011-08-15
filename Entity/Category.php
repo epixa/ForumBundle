@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM,
  * @license    Simplified BSD
  * @author     Court Ewing (court@epixa.com)
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Epixa\ForumBundle\Repository\Category")
  * @ORM\Table(name="epixa_forum_category")
  */
 class Category
@@ -146,5 +146,15 @@ class Category
 
         $this->dateCreated = $date;
         return $this;
+    }
+
+    /**
+     * Converts the category to a string
+     * 
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

@@ -25,7 +25,7 @@ class Post extends EntityRepository
      *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function getStandardQueryBuilder()
+    public function getSelectQueryBuilder()
     {
         return $this->createQueryBuilder('p');
     }
@@ -34,7 +34,7 @@ class Post extends EntityRepository
      * Restricts the given query to only posts that are associated with the given topic
      *
      * @param \Doctrine\ORM\QueryBuilder $qb
-     * @param \Epixa\ForumBundle\Entity\Topic $topic
+     * @param \Epixa\ForumBundle\Entity\Topic\StandardTopic $topic
      * @return void
      */
     public function restrictToTopic(QueryBuilder $qb, TopicEntity $topic)
