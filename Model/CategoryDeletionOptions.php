@@ -6,15 +6,11 @@
 namespace Epixa\ForumBundle\Model;
 
 use Epixa\ForumBundle\Entity\Category as CategoryEntity,
-    Symfony\Component\Validator\Constraints as Assert,
-    Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface,
-    Symfony\Component\Validator\ExecutionContext;
+    Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * A representation of the parameters used to delete a category
  *
- * @Assert\Callback(methods = {"isInheritingCategoryValid"})
- * 
  * @category   EpixaForumBundle
  * @package    Model
  * @copyright  2011 epixa.com - Court Ewing
@@ -24,80 +20,66 @@ use Epixa\ForumBundle\Entity\Category as CategoryEntity,
 class CategoryDeletionOptions
 {
     /**
-     * @Assert\NotBlank()
-     * @var integer|null
+     * @var \Epixa\ForumBundle\Entity\Category
      */
-    protected $inheritingCategoryId = null;
+    protected $targetCategory;
 
     /**
-     * @var \Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface|null
+     * @Assert\NotBlank()
+     * @var \Epixa\ForumBundle\Entity\Category|null
      */
-    protected $choices = null;
+    protected $inheritingCategory = null;
 
+
+    /**
+     * Constructs the required deletion options
+     *
+     * The category that is targeted for deletion is set here to ensure it is never not set.
+     *
+     * @param \Epixa\ForumBundle\Entity\Category $category
+     */
+    public function __construct(CategoryEntity $category)
+    {
+        if (!$category) {
+            throw new \InvalidArgumentException('No target category specified');
+        }
+
+        $this->targetCategory = $category;
+    }
+
+    /**
+     * Gets the category that is targeted for deletion
+     * 
+     * @return \Epixa\ForumBundle\Entity\Category
+     */
+    public function getTargetCategory()
+    {
+        return $this->targetCategory;
+    }
 
     /**
      * Sets the category id that should inherit all posts from the deleted category
      *
-     * @param integer $id
+     * @param \Epixa\ForumBundle\Entity\Category $category
      * @return CategoryDeletionOptions *Fluent interface*
      */
-    public function setInheritingCategoryId($id)
+    public function setInheritingCategory($category)
     {
-        $this->inheritingCategoryId = (int)$id;
+        if ($category->getId() === $this->getTargetCategory()->getId()) {
+            throw new \InvalidArgumentException('A category targeted for deletion cannot be its own heir');
+        }
+        
+        $this->inheritingCategory = $category;
         return $this;
     }
 
     /**
      * Gets the category id that should inherit all posts from the deleted category
      * 
-     * @return integer|null
+     * @return \Epixa\ForumBundle\Entity\Category|null
      */
-    public function getInheritingCategoryId()
+    public function getInheritingCategory()
     {
-        return $this->inheritingCategoryId;
-    }
-
-    /**
-     * Sets the choice list for all possible inheriting categories
-     *
-     * @param \Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface $choices
-     * @return CategoryDeletionOptions *Fluent interface*
-     */
-    public function setInheritingCategoryChoices(ChoiceListInterface $choices)
-    {
-        $this->choices = $choices;
-        return $this;
-    }
-
-    /**
-     * Gets the choice list for all possible inheriting categories
-     * 
-     * @return \Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceListInterface|null
-     */
-    public function getInheritingCategoryChoices()
-    {
-        return $this->choices;
-    }
-
-    /**
-     * Is the set inheriting category valid?
-     * 
-     * @throws \LogicException
-     * @param \Symfony\Component\Validator\ExecutionContext $context
-     * @return void
-     */
-    public function isInheritingCategoryValid(ExecutionContext $context)
-    {
-        $choiceList = $this->getInheritingCategoryChoices();
-        if (!$choiceList) {
-            throw new \LogicException('No choice list configured for inheriting categories');
-        }
-        
-        $choices = $this->getInheritingCategoryChoices()->getChoices();
-        if (!array_key_exists($this->getInheritingCategoryId(), $choices)) {
-            $propertyPath = $context->getPropertyPath() . '.inheritingCategoryId';
-            $context->setPropertyPath($propertyPath);
-            $context->addViolation('The category you chose is not a valid option', array(), null);
-        }
+        return $this->inheritingCategory;
     }
 }

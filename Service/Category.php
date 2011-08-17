@@ -88,16 +88,13 @@ class Category extends AbstractDoctrineService
      * in the deletion options object.
      *
      * @throws \InvalidArgumentException|\RuntimeException
-     * @param \Epixa\ForumBundle\Entity\Category $category
      * @param \Epixa\ForumBundle\Model\CategoryDeletionOptions $options
      * @return void
      */
-    public function delete(CategoryEntity $category, CategoryDeletionOptions $options)
+    public function delete(CategoryDeletionOptions $options)
     {
-        $inheritingCategoryId = $options->getInheritingCategoryId();
-        if (!$inheritingCategoryId || $inheritingCategoryId === $category->getId()) {
-            throw new \InvalidArgumentException('Categories cannot be deleted without a valid inheriting category');
-        }
+        $inheritingCategory = $options->getInheritingCategory();
+        $targetCategory = $options->getTargetCategory();
         
         /* @var \Doctrine\DBAL\Connection $db */
         $em = $this->getEntityManager();
@@ -107,23 +104,23 @@ class Category extends AbstractDoctrineService
             'update epixa_forum_topic
              set category_id = %s
              where category_id = %s',
-            $db->quote($inheritingCategoryId),
-            $db->quote($category->getId())
+            $db->quote($inheritingCategory->getId()),
+            $db->quote($targetCategory->getId())
         );
 
         $topicCountSql = sprintf(
             'update epixa_forum_category nc, epixa_forum_category oc
              set nc.total_topics = nc.total_topics + oc.total_topics
              where nc.id = %s and oc.id = %s',
-            $db->quote($inheritingCategoryId),
-            $db->quote($category->getId())
+            $db->quote($inheritingCategory->getId()),
+            $db->quote($targetCategory->getId())
         );
 
         $db->beginTransaction();
         try {
             $db->exec($topicCountSql);
             $db->exec($moveTopicsSql);
-            $em->remove($category);
+            $em->remove($targetCategory);
             $em->flush();
 
             $db->commit();

@@ -7,7 +7,10 @@ namespace Epixa\ForumBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType,
     Symfony\Component\Form\FormBuilder,
-    Epixa\ForumBundle\Model\CategoryDeletionOptions;
+    Epixa\ForumBundle\Model\CategoryDeletionOptions,
+    Epixa\ForumBundle\Repository\Category as CategoryRepository,
+    Symfony\Component\Form\FormEvents,
+    Symfony\Component\Form\Event\DataEvent;
 
 /**
  * Form type for deleting categories
@@ -30,17 +33,23 @@ class DeleteCategoryType extends AbstractType
      */
     public function buildForm(FormBuilder $builder, array $options)
     {
-        if (!isset($options['data']) || !($options['data'] instanceof CategoryDeletionOptions)) {
-            throw new \LogicException('No valid options provided');
-        }
+        // creates the inheriting select field whenever the data (deletion options model) is set
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function(DataEvent $event) use ($builder){
+            $data = $event->getData();
+            if (!$data instanceof CategoryDeletionOptions) {
+                return;
+            }
 
-        /* @var \Epixa\ForumBundle\Model\CategoryDeletionOptions $deletionOptions */
-        $deletionOptions = $options['data'];
-
-        $builder->add('inheritingCategoryId', 'choice', array(
-            'label' => 'Move all posts to:',
-            'choice_list' => $deletionOptions->getInheritingCategoryChoices()
-        ));
+            $event->getForm()->add($builder->create('inheritingCategory', 'entity', array(
+                'label' => 'Move all posts to:',
+                'class' => 'Epixa\ForumBundle\Entity\Category',
+                'query_builder' => function(CategoryRepository $repo) use ($data){
+                    $qb = $repo->getSelectQueryBuilder();
+                    $repo->excludeCategory($qb, $data->getTargetCategory());
+                    return $qb;
+                }
+            ))->getForm());
+        });
     }
 
     /**

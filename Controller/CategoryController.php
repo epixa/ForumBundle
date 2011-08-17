@@ -136,16 +136,14 @@ class CategoryController extends Controller
         $service = $this->getCategoryService();
         $category = $service->get($id);
 
-        $deletionOptions = new CategoryDeletionOptions();
-        $deletionOptions->setInheritingCategoryChoices($service->getCategoryChoiceList($category));
-
+        $deletionOptions = new CategoryDeletionOptions($category);
         $form = $this->createForm(new DeleteCategoryType(), $deletionOptions);
 
         if ($request->getMethod() == 'POST') {
             $form->bindRequest($request);
 
             if ($form->isValid()) {
-                $service->delete($category, $deletionOptions);
+                $service->delete($deletionOptions);
 
                 $this->get('session')->setFlash('notice', 'Category deleted');
                 return $this->redirect($this->generateUrl('forum_home'));
